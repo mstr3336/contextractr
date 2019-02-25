@@ -41,10 +41,10 @@ index_kws_in_strings <- function(col, sep, indexer){
             # & match_locs[n], which will nest a variable vector of integers
             # split_col should be tokenized s.t it is first split into spans,
             # then into words (so split col is list->list->chr
-            cvecs <- split_col[match_locs]
+            sentences <- split_col[match_locs]
 
-            positions <- cvecs %>%
-              purrr::map(~ agrep(keyword, ., max.distance = approx.match)) %>%
+            positions <- sentences %>%
+              purrr::map_depth(2,~ agrep(keyword, ., max.distance = approx.match)) %>%
               purrr::set_names(nm = as.character(match_locs))
             return(positions)
           }
