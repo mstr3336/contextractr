@@ -197,7 +197,7 @@ Contextractr$set(
         keywords, approx.match,
         function(keywords, approx.match){
           out <- purrr::map2(keywords, approx.match,
-                             ~ agrep(.x, col, max.distance = .y, ignore.case = TRUE))
+                             ~ agrepl(.x, col, max.distance = .y, ignore.case = TRUE))
           return(out)
         }))
 
@@ -217,23 +217,29 @@ Contextractr$set(
     out <- .df %>%
       tibble::add_column(!! kw_col := rep_len(list(), nrow(.))) %>%
       dplyr::mutate(!!group_col := NA_character_)
-    print(out)
 
-    unnested <- indexer %>%
-      tidyr::unnest(keywords, match_locs) %>%
-      dplyr::mutate(keywords = as.character(keywords)) %>%
-      tidyr::unnest(match_locs)
+    for (i in 1:nrow(indexer)){
+      kws <- indexer$keywords[[i]]
+      locs <- indexer$match_locs[[i]]
+      for (j in 1:length(kws)){
+        kw <- kws[[j]]
+        loc_list <- locs[[j]]
+        out %<>%
+          dplyr::mutate(!!kw_col := dplyr::if_else(
+            loc_list,
+            purrr::map(!!kw_col, function(x){
+              return(purrr::splice(x, list(kw)))
+              }), !!kw_col))
+        out %<>%
+          dplyr::mutate(!!group_col := dplyr::if_else(
+            loc_list,
+            indexer$title[[i]], !!group_col
+          ))
 
-    print(unnested)
-
-    for (i in 1:nrow(unnested)){
-      out[unnested$match_locs[[i]], group_col] <- unnested$title[[i]]
-      yep <- out[unnested$match_locs[[i]], kw_col] %>%
-        dplyr::pull() %>% purrr::map(~append(.,unnested$keywords[[i]]))
-      str(yep)
-      out[unnested$match_locs[[i]], kw_col] <- yep
-
+      }
     }
+
+
 
     return(out)
 
