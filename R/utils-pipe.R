@@ -9,3 +9,14 @@
 #' @importFrom magrittr %>%
 #' @usage lhs \%>\% rhs
 NULL
+
+
+#' Backpipe
+#'
+#' @name %<>%
+#' @rdname backpipe
+#' @keywords internal
+#' @export
+#' @importFrom magrittr %<>%
+#' @usage lhs \%<>\% rhs
+NULL

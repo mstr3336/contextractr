@@ -1,6 +1,6 @@
 
 
-
+#' @export
 Contextractr <- R6::R6Class(
   "Contextractr",
   public = list(
@@ -111,6 +111,31 @@ Contextractr$set(
   }
 )
 
+# locate_keywords =====
+#' Locate/classify columns according to keywords
+#' @name Contextractr$locate_keywords
+#' @family Contextractr
+#' @param .df the dataframe to process
+#' @param selection the unquoted column for contextractr to look at
+#' @return the input dataframe, with extra columns appended corresponding to
+#'         the keywords found
+#' @importFrom glue glue
+NULL
+Contextractr$set(
+  "public", "locate_keywords",
+  function(.df, selection){
+    selection <- rlang::enquo(selection)
+    col <- selection %>% rlang::as_name()
+
+    idx <- .df %>%
+      dplyr::pull(col) %>%
+      private$find_keywords(private$mapping)
+
+    out <- .df %>% private$add_keyword_cols(col, idx)
+    return(out)
+  }
+)
+
 # ~~~~~ ========================
 # PRIVATE ======================================
 
@@ -126,7 +151,9 @@ Contextractr$set(
       purrr::transpose(.names = nms) %>% tibble::as_tibble()
     # Fill in the blanks for any missing cols
     missing <- private$map_cols %>% setdiff(nms)
-    out %<>% dplyr::mutate_at(missing, ~ NA)
+    out %<>%
+      dplyr::mutate_at(missing, ~ NA) %>%
+      dplyr::mutate_at(c("title"), as.character)
     return(out)
   }
 )
@@ -175,6 +202,41 @@ Contextractr$set(
         }))
 
     return(indexer)
+  }
+)
+
+# add_keyword_cols ====
+
+#' @importFrom glue glue
+
+Contextractr$set(
+  "private", "add_keyword_cols",
+  function(.df, col,indexer){
+    group_col <- glue("{col}_group") %>% as.character()
+    kw_col    <- glue("{col}_keywords") %>% as.character()
+    out <- .df %>%
+      tibble::add_column(!! kw_col := rep_len(list(), nrow(.))) %>%
+      dplyr::mutate(!!group_col := NA_character_)
+    print(out)
+
+    unnested <- indexer %>%
+      tidyr::unnest(keywords, match_locs) %>%
+      dplyr::mutate(keywords = as.character(keywords)) %>%
+      tidyr::unnest(match_locs)
+
+    print(unnested)
+
+    for (i in 1:nrow(unnested)){
+      out[unnested$match_locs[[i]], group_col] <- unnested$title[[i]]
+      yep <- out[unnested$match_locs[[i]], kw_col] %>%
+        dplyr::pull() %>% purrr::map(~append(.,unnested$keywords[[i]]))
+      str(yep)
+      out[unnested$match_locs[[i]], kw_col] <- yep
+
+    }
+
+    return(out)
+
   }
 )
 

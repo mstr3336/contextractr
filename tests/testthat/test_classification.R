@@ -1,6 +1,6 @@
+library(testthat)
+library(contextractr)
 context("Can a simple string be classified by the corpus?")
-
-`%<>%` <- magrittr::`%<>%`
 
 # Produce a more informative output when failing expect_equivalent/identical
 # testcases for visual comparison
@@ -20,7 +20,7 @@ example_simple <- function(){
     "Left sided chest pain radiating to jaw, heavy and sharp in nature,",
     "nausa, mild SOB. Aspirin 300mgs, 900mcg S/L GTN, pain initially 6 now 3"
   )
-  strings[[2]] <- "Left sided chest pain"
+  strings[[2]] <- "Left sided cp and also a bit of chest pain"
   strings[[3]] <- "just likes hospital!!!"
 
   strings %<>% purrr::map(as.character)
@@ -48,15 +48,6 @@ example_fuzzy <- function(){
   return(out)
 }
 
-eg_expect_simple <- function(){
-  out <- tibble::tribble(
-    ~EVENT_KEY, ~CLASSIFICATION, ~CLASSIFICATION_REASON,
-    1         , "HIGH"         , "left sided cp,radiating cp",
-    2         , "HIGH"         , "left sided cp",
-    3         , "Unclassified" , ""
-  )
-  return(out)
-}
 
 example_longer <- function(){
   out <- example_simple()
@@ -70,11 +61,12 @@ example_longer <- function(){
   return(dplyr::bind_rows(out,more))
 }
 
-compare_helper <- function(actual_df, expect_df){
+compare_helper <- function(actual_df, expect_df, by = "EVENT_KEY",
+                           cols = c("note_value_group", "note_value_keywords")){
   compare <- actual_df %<>%
-    dplyr::inner_join(expect_df, by = "EVENT_KEY", suffix = c("", ".e"))
+    dplyr::inner_join(expect_df, by = by, suffix = c("", ".e"))
 
-  for (col in c("CLASSIFICATION", "CLASSIFICATION_REASON")){
+  for (col in cols){
     a <- compare %>% dplyr::pull(col)
     e <- compare %>% dplyr::pull(glue::glue("{col}.e"))
 
@@ -86,23 +78,27 @@ compare_helper <- function(actual_df, expect_df){
 
 test_that("Can classify some simple text strings correctly", {
   input <- example_simple()
-  out <- input %>% Classify_Text("note_value", "./chest_pain.json")
+  ctx <- Contextractr$new(json = "./chest_pain.json")
+  out <- input %>% ctx$locate_keywords(note_value)
 
-  expected <- eg_expect_simple()
+  e <- tibble::tribble(
+    ~EVENT_KEY, ~note_value_group, ~note_value_keywords,
+    1         , "chest pain"     , list("chest pain"),
+    2         , "chest pain"     , list("chest pain", "cp"),
+    3         , NA               , NULL
+  )
 
-  compare_helper(out, expected)
+  compare_helper(out, e, by = "EVENT_KEY")
 })
 
 context("Does fuzzy matching work correctly?")
 
 test_that("Can match on fuzzy", {
   input <- example_fuzzy()
+  ctx <- Contextractr$new(json = ".chest_pain.json")
 
-  out <- input %>% Classify_Text("note_value","./chest_pain.json")
+  out <- input %>% ctx$locate_keywords(note_value)
 
-  e <- eg_expect_simple()
-  e[e$EVENT_KEY == 2, "CLASSIFICATION"][[1]] <- "Unclassified"
-  e[e$EVENT_KEY == 2, "CLASSIFICATION_REASON"][[1]] <- ""
 
   compare_helper(out, e)
 })
@@ -110,8 +106,10 @@ test_that("Can match on fuzzy", {
 context("Classification based on prefixes/suffixes works correctly")
 
 test_that("Can use prefixes/suffixes correct",{
+  skip()
   input <- example_longer()
-  out <- input %>% Classify_Text("note_value", "./two_terms.json")
+  ctx <- Contextractr$new(json = "./two_terms.json")
+  out <- input %>% ctx$locate_keywords(note_value)
 
 
   e <- list()
@@ -127,8 +125,4 @@ test_that("Can use prefixes/suffixes correct",{
 
   compare_helper(out, e)
 })
-
-
-
-
 
