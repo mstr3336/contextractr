@@ -16,3 +16,5 @@ Imports:
     stringr,
     magrittr,
     R6
+Suggests: 
+    testthat
