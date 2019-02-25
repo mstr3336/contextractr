@@ -17,7 +17,9 @@ Contextractr <- R6::R6Class(
     prefix_length = 4,
     suffix_length = 4,
     prefix_ignore = ".*\\.",
-    suffix_ignore = "\\..*"
+    suffix_ignore = "\\..*",
+    span_sep = "[\\.\n]+",
+    sep = "\\s+"
   )
   )
 
@@ -33,6 +35,7 @@ Contextractr <- R6::R6Class(
 #'     the mapping dictionary
 #' @name Contextractr$new
 #' @family Contextractr
+#' @importFrom magrittr %<>%
 NULL
 
 Contextractr$set(
@@ -48,7 +51,7 @@ Contextractr$set(
                      tibble = tibble)
 
     for (nm in names(inputs)){
-      if (!rlang::is_empty(inputs[[nm]])) inputs[[nm]] %>% handlers[[nm]]
+      if (!rlang::is_empty(inputs[[nm]])) inputs[[nm]] %>% handlers[[nm]]()
     }
     return(invisible(self))
   }
@@ -65,7 +68,7 @@ NULL
 Contextractr$set(
   "public", "add_serial",
   function(mapping){
-    mapping %>% private$serial_to_tbl() %>% private$add_mapping_entries()
+    mapping %>% private$serial_as_tbl() %>% private$add_mapping_entries()
     return(invisible(self))
   }
 )
@@ -135,10 +138,93 @@ Contextractr$set(
 Contextractr$set(
   "private", "add_mapping_entries",
   function(mappings){
-    # Definitely do some validation
+    # TODO: validation
 
 
-    private$mapping %<>% dplyr::bind_rows(mapping)
+    private$mapping %<>% dplyr::bind_rows(mappings)
     return(invisible(self))
+  }
+)
+
+# prep_column =====
+
+Contextractr$set(
+  "private", "prep_column",
+  function(col){
+    col %<>%
+      iconv(to = "UTF-8") %>%
+      tolower() %>%
+      stringr::str_squish()
+    return(col)
+  }
+)
+
+# find_keywords =====
+
+Contextractr$set(
+  "private", "find_keywords",
+  function(col, mapping){
+
+    indexer <- mapping %>%
+      dplyr::mutate(match_locs = purrr::map2(
+        keywords, approx.match,
+        function(keywords, approx.match){
+          out <- purrr::map2(keywords, approx.match,
+                             ~ agrep(.x, col, max.distance = .y, ignore.case = TRUE))
+          return(out)
+        }))
+
+    return(indexer)
+  }
+)
+
+# split_column ======
+
+Contextractr$set(
+  "private", "split_column",
+  function(col){
+    span_sep <- private$span_sep
+    sep      <- private$sep
+
+    split_col <- col %>% rlang::as_list()
+
+    # Split on sentences, or paragragraphs
+    if (!is.na(span_sep)) split_col %<>% stringr::str_split(span_sep)
+    # Split on word boundaries
+    split_col %<>% purrr::map(~ stringr::str_split(., sep))
+    return(split_col)
+  }
+)
+
+# index_kws_in_strings ====
+
+Contextractr$set(
+  "private", "index_kws_in_strings",
+  function(split_col, indexer){
+    if (! "match_locs" %in% names(indexer)){
+      stop("index_kws_in_strings called before find_keywords?")
+    }
+    out <- indexer %>%
+      dplyr::mutate(kw_pos = purrr::pmap(
+        .,
+        function(keywords, approx.match, match_locs){
+          # iterate through these columns
+          out <- purrr::pmap(
+            list(keywords, approx.match, match_locs),
+            function(keyword, approx.match, match_locs, ...){
+              # within each row, there are vectors of
+              # keywords[n], approx.match[n],
+              # & match_locs[n], which will nest a variable vector of integers
+              # split_col should be tokenized s.t it is first split into spans,
+              # then into words
+              # so split col is entry_list->sentence_list->word_list
+              sentences <- split_col[match_locs]
+
+              positions <- sentences %>%
+                purrr::map_depth(2,~ agrep(keyword, ., max.distance = approx.match)) %>%
+                purrr::set_names(nm = as.character(match_locs))
+              return(positions)
+            })}))
+    return(out)
   }
 )
