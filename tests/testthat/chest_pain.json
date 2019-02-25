@@ -1,0 +1,19 @@
+[
+{"title" : "chest pain",
+"keywords" : ["chest pain", "cp"], 
+"approx.match" : [0.1, 0.0],
+"false.positive.matches" : [],
+"prefix": ["left sided", "pleuretic"],
+"suffix": ["radiating"],
+"prefix.approx.match" : [0.1, 0.1],
+"suffix.approx.match" : [0.1],
+"prefix.descriptions" : ["left sided cp", "pleuretic cp"],
+"suffix.descriptions" : ["radiating cp"],
+"prefix.class" : ["HIGH", "LOW"],
+"suffix.class" : ["HIGH"],
+"ignore.prefix": ["no", "nil"],
+"ignore.suffix": ["denied"],
+"ignore.prefix.approx.match" : [0.0, 0.0],
+"ignore.suffix.approx.match" : [0.1]
+}
+]
