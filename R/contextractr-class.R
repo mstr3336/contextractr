@@ -1,5 +1,12 @@
-
-
+#' Contextractr - Fuzzy Extraction and Classification by Context
+#'
+#' This R6 class aims to provide a simple interface for providing
+#'      pattern + context based rules in order to extract values by
+#'      keywords
+#' @name Contextractr
+#' @family Contextractr
+#' @family Contextractr-important
+NULL
 #' @export
 Contextractr <- R6::R6Class(
   "Contextractr",
@@ -35,6 +42,7 @@ Contextractr <- R6::R6Class(
 #'     the mapping dictionary
 #' @name Contextractr$new
 #' @family Contextractr
+#' @family Contextract-important
 #' @importFrom magrittr %<>%
 NULL
 
@@ -63,6 +71,7 @@ Contextractr$set(
 #' @name Contextractr$add_serial
 #' @family Contextractr
 #' @importFrom magrittr %<>%
+#' @param mapping the serial (list-of-dicts style) mapping to add
 NULL
 
 Contextractr$set(
@@ -75,9 +84,13 @@ Contextractr$set(
 
 # add_json =======
 
-#' Add a json mapping
+#' Add a mapping
+#'
+#' Given a path to a mapping file, add that file's contents to the
+#'      mapping
 #' @name Contextractr$add_json
 #' @family Contextractr
+#' @param path the path to the mapping file
 NULL
 
 Contextractr$set(
@@ -96,6 +109,7 @@ Contextractr$set(
 
 #' Add a yaml mapping
 #' @name Contextractr$add_yaml
+#' @rdname Contextractr$add_json
 #' @family Contextractr
 NULL
 
