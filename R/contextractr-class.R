@@ -109,7 +109,7 @@ Contextractr$set(
 
 #' Add a yaml mapping
 #' @name Contextractr$add_yaml
-#' @rdname Contextractr$add_json
+#' @rdname Contextractr-cash-add_json
 #' @family Contextractr
 NULL
 
