@@ -2,6 +2,7 @@
 % Please edit documentation in R/contextractr-class.R
 \name{Contextractr$add_json}
 \alias{Contextractr$add_json}
+\alias{Contextractr$add_yaml}
 \title{Add a mapping}
 \arguments{
 \item{path}{the path to the mapping file}
@@ -12,7 +13,11 @@ mapping
 }
 \seealso{
 Other Contextractr: \code{\link{Contextractr$add_serial}},
-  \code{\link{Contextractr$add_yaml}},
+  \code{\link{Contextractr$locate_keywords}},
+  \code{\link{Contextractr$new}},
+  \code{\link{Contextractr}}
+
+Other Contextractr: \code{\link{Contextractr$add_serial}},
   \code{\link{Contextractr$locate_keywords}},
   \code{\link{Contextractr$new}},
   \code{\link{Contextractr}}

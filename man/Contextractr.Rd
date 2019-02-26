@@ -11,7 +11,6 @@ keywords
 \seealso{
 Other Contextractr: \code{\link{Contextractr$add_json}},
   \code{\link{Contextractr$add_serial}},
-  \code{\link{Contextractr$add_yaml}},
   \code{\link{Contextractr$locate_keywords}},
   \code{\link{Contextractr$new}}
 }
