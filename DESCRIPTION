@@ -15,6 +15,10 @@ Imports:
     purrr,
     stringr,
     magrittr,
-    R6
+    R6,
+    glue,
+    tidyr
 Suggests: 
     testthat
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 6.1.1
