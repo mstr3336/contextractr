@@ -2,13 +2,19 @@
 % Please edit documentation in R/contextractr-class.R
 \name{Contextractr$add_json}
 \alias{Contextractr$add_json}
-\title{Add a json mapping}
+\title{Add a mapping}
+\arguments{
+\item{path}{the path to the mapping file}
+}
 \description{
-Add a json mapping
+Given a path to a mapping file, add that file's contents to the
+mapping
 }
 \seealso{
 Other Contextractr: \code{\link{Contextractr$add_serial}},
   \code{\link{Contextractr$add_yaml}},
-  \code{\link{Contextractr$new}}
+  \code{\link{Contextractr$locate_keywords}},
+  \code{\link{Contextractr$new}},
+  \code{\link{Contextractr}}
 }
 \concept{Contextractr}

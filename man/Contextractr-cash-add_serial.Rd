@@ -3,12 +3,17 @@
 \name{Contextractr$add_serial}
 \alias{Contextractr$add_serial}
 \title{Add a serial mapping}
+\arguments{
+\item{mapping}{the serial (list-of-dicts style) mapping to add}
+}
 \description{
 Add a serial mapping
 }
 \seealso{
 Other Contextractr: \code{\link{Contextractr$add_json}},
   \code{\link{Contextractr$add_yaml}},
-  \code{\link{Contextractr$new}}
+  \code{\link{Contextractr$locate_keywords}},
+  \code{\link{Contextractr$new}},
+  \code{\link{Contextractr}}
 }
 \concept{Contextractr}
