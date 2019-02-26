@@ -1,0 +1,9 @@
+reference:
+- title: Contextractr public methods
+  desc: These are the methods belonging to the Contextractr class
+  contents:
+  - has_concept("Contextractr")
+- title: All methods
+  desc: All methods in the package
+  contents:
+  - matches("*")
