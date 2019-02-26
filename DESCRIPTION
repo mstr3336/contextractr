@@ -1,12 +1,14 @@
 Package: contextractr
 Type: Package
-Title: What the Package Does (Title Case)
-Version: 0.1.0
-Author: Who wrote it
-Maintainer: The package maintainer <yourself@somewhere.net>
-Description: More about what it does (maybe more than one line)
-    Use four spaces when indenting paragraphs within the Description.
-License: What license is it under?
+Title: Contextractr - Fuzzy Extraction and Classification by Context
+Version: 0.1.0.9001
+Authors@R: person("Matthew", "Strasiotto", 
+                  email = "matthew.strasiotto@gmail.com",
+                  role = c("aut", "cre"))
+Description: This R6 class aims to provide a simple interface for providing
+      pattern + context based rules in order to extract values by
+      keywords.
+License: MIT
 Encoding: UTF-8
 LazyData: true
 Imports: 
