@@ -1,6 +1,6 @@
 library(testthat)
 library(contextractr)
-context("Can a simple string be classified by the corpus?")
+
 
 # Produce a more informative output when failing expect_equivalent/identical
 # testcases for visual comparison
@@ -34,6 +34,18 @@ example_simple <- function(){
   return(out)
 }
 
+example_longer <- function(){
+  out <- example_simple()
+
+  more <- tibble::tribble(
+    ~ENCNTR_KEY, ~EVENT_KEY, ~note_value,
+    4          , 4         , "just hates hospital",
+    5          , 5         , "really likes hospital",
+    6          , 6         , "thinks hospital is fantastic"
+  )
+  return(dplyr::bind_rows(out,more))
+}
+
 example_fuzzy <- function(){
   out <- example_simple()
 
@@ -49,18 +61,6 @@ example_fuzzy <- function(){
 }
 
 
-example_longer <- function(){
-  out <- example_simple()
-
-  more <- tibble::tribble(
-    ~ENCNTR_KEY, ~EVENT_KEY, ~note_value,
-    4          , 4         , "just hates hospital",
-    5          , 5         , "really likes hospital",
-    6          , 6         , "thinks hospital is fantastic"
-  )
-  return(dplyr::bind_rows(out,more))
-}
-
 compare_helper <- function(actual_df, expect_df, by = "EVENT_KEY",
                            cols = c("note_value_group", "note_value_keywords")){
   compare <- actual_df %<>%
@@ -75,7 +75,7 @@ compare_helper <- function(actual_df, expect_df, by = "EVENT_KEY",
   }
 }
 
-
+context("Can presence of keywords be found?")
 test_that("Can classify some simple text strings correctly", {
   input <- example_simple()
   ctx <- Contextractr$new(json = "./chest_pain.json")
@@ -83,8 +83,8 @@ test_that("Can classify some simple text strings correctly", {
 
   e <- tibble::tribble(
     ~EVENT_KEY, ~note_value_group, ~note_value_keywords,
-    1         , "chest pain"     , list("chest pain"),
-    2         , "chest pain"     , list("chest pain", "cp"),
+    1         , "chest pain"     , c("chest pain"),
+    2         , "chest pain"     , c("chest pain", "cp"),
     3         , NA               , NULL
   )
 
@@ -95,10 +95,16 @@ context("Does fuzzy matching work correctly?")
 
 test_that("Can match on fuzzy", {
   input <- example_fuzzy()
-  ctx <- Contextractr$new(json = ".chest_pain.json")
+  ctx <- Contextractr$new(json = "./chest_pain.json")
 
   out <- input %>% ctx$locate_keywords(note_value)
 
+  e <- tibble::tribble(
+    ~EVENT_KEY, ~note_value_group, ~note_value_keywords,
+    1         , "chest pain"     , c("chest pain"),
+    2         , "chest pain"     , c("cp"),
+    3         , NA               , NULL
+  )
 
   compare_helper(out, e)
 })
@@ -106,7 +112,7 @@ test_that("Can match on fuzzy", {
 context("Classification based on prefixes/suffixes works correctly")
 
 test_that("Can use prefixes/suffixes correct",{
-  skip()
+  skip("Not fully written")
   input <- example_longer()
   ctx <- Contextractr$new(json = "./two_terms.json")
   out <- input %>% ctx$locate_keywords(note_value)
