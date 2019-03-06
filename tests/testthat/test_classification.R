@@ -62,7 +62,7 @@ example_fuzzy <- function(){
 
 
 compare_helper <- function(actual_df, expect_df, by = "EVENT_KEY",
-                           cols = c("note_value_group", "note_value_keywords")){
+                           cols = c("note_value_groups", "note_value_keywords")){
   compare <- actual_df %<>%
     dplyr::inner_join(expect_df, by = by, suffix = c("", ".e"))
 
@@ -82,10 +82,10 @@ test_that("Can classify some simple text strings correctly", {
   out <- input %>% ctx$locate_keywords(note_value)
 
   e <- tibble::tribble(
-    ~EVENT_KEY, ~note_value_group, ~note_value_keywords,
-    1         , "chest pain"     , c("chest pain"),
-    2         , "chest pain"     , c("chest pain", "cp"),
-    3         , NA               , NULL
+    ~EVENT_KEY, ~note_value_groups, ~note_value_keywords,
+    1         , c("chest pain")     , c("chest pain"),
+    2         , c("chest pain")     , c("chest pain", "cp"),
+    3         , NULL                , NULL
   )
 
   compare_helper(out, e, by = "EVENT_KEY")
@@ -100,10 +100,10 @@ test_that("Can match on fuzzy", {
   out <- input %>% ctx$locate_keywords(note_value)
 
   e <- tibble::tribble(
-    ~EVENT_KEY, ~note_value_group, ~note_value_keywords,
-    1         , "chest pain"     , c("chest pain"),
-    2         , "chest pain"     , c("cp"),
-    3         , NA               , NULL
+    ~EVENT_KEY, ~note_value_groups, ~note_value_keywords,
+    1         , c("chest pain")  , c("chest pain"),
+    2         , c("chest pain")  , c("cp"),
+    3         , NULL             , NULL
   )
 
   compare_helper(out, e)
