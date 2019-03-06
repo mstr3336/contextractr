@@ -151,10 +151,8 @@ Contextractr$set(
 
     out <- .df %>% private$add_keyword_cols(col, idx)
     out %<>%
-      dplyr::mutate(!!group_col := purrr::map(indexer, "title"))
-    out %<>%
-      dplyr::mutate_at(group_col,
-                       ~purrr::map_chr(.,null_as_na))
+      dplyr::mutate(!!group_col := purrr::map(indexer, "title")) %>%
+      dplyr::mutate_at(group_col, ~ purrr::map(., unique))
     out %<>%
       dplyr::mutate(!!kw_col    := purrr::map(indexer, "keywords")) %>%
       dplyr::select(-indexer)
