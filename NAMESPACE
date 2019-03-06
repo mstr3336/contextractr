@@ -3,6 +3,7 @@
 export("%<>%")
 export("%>%")
 export(Contextractr)
+export(csv_to_serial)
 importFrom(glue,glue)
 importFrom(magrittr,"%<>%")
 importFrom(magrittr,"%>%")
