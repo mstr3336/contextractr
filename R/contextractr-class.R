@@ -258,7 +258,7 @@ Contextractr$set(
     # A nested tibble col will be added for each corresponding match
     out <- .df %>%
       dplyr::mutate(idx = dplyr::row_number()) %>%
-      dplyr::nest_join(indexer, by = c("idx" = "match_locs"))
+      dplyr::nest_join(indexer, by = c("idx" = "match_locs"), name = "indexer")
 
     return(out)
 
