@@ -142,7 +142,7 @@ Contextractr$set(
     selection <- rlang::enquo(selection)
     col <- selection %>% rlang::as_name()
 
-    group_col <- glue("{col}_group") %>% as.character()
+    group_col <- glue("{col}_groups") %>% as.character()
     kw_col    <- glue("{col}_keywords") %>% as.character()
 
     idx <- .df %>%
@@ -151,10 +151,8 @@ Contextractr$set(
 
     out <- .df %>% private$add_keyword_cols(col, idx)
     out %<>%
-      dplyr::mutate(!!group_col := purrr::map(indexer, list("title",1)))
-    out %<>%
-      dplyr::mutate_at(group_col,
-                       ~purrr::map_chr(.,null_as_na))
+      dplyr::mutate(!!group_col := purrr::map(indexer, "title")) %>%
+      dplyr::mutate_at(group_col, ~ purrr::map(., unique))
     out %<>%
       dplyr::mutate(!!kw_col    := purrr::map(indexer, "keywords")) %>%
       dplyr::select(-indexer)
