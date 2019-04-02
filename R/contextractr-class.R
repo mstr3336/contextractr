@@ -216,7 +216,7 @@ Contextractr$set(
         am = rep_len(0.0, length.out = length(kw))
         return(am)
       }
-      stop("For " + kw + "Invalid approx.match specified!")
+      stop("For ", kw, " Invalid approx.match specified!")
     }
 
     mappings %<>%
