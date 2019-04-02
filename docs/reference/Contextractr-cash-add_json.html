@@ -64,7 +64,7 @@ mapping" />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">contextractr</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.0.9002</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.0.9003</span>
       </span>
     </div>
 
@@ -117,13 +117,20 @@ mapping</p>
     </tr>
     </table>
     
+    <h2 class="hasAnchor" id="mapping-rules"><a class="anchor" href="#mapping-rules"></a>Mapping Rules</h2>
+
+    
+    <p>For a given entry, corresponding to a a row in a tibble, or a dict/named
+list in a list-of-dicts, the following must be specified:</p><pre>* title: The output grouping for the item (string)
+* keywords: (list of strings) a list of keywords by which to identify
+  this group
+* approx.match: (list of decimal numbers) (optional - sets to 0 if not set)
+</pre>
+    
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
     <div class='dont-index'><p>Other Contextractr: <code><a href='Contextractr-cash-add_serial.html'>Contextractr$add_serial</a></code>,
-  <code><a href='Contextractr-cash-locate_keywords.html'>Contextractr$locate_keywords</a></code>,
-  <code><a href='Contextractr-cash-new.html'>Contextractr$new</a></code>,
-  <code><a href='Contextractr.html'>Contextractr</a></code></p>
-<p>Other Contextractr: <code><a href='Contextractr-cash-add_serial.html'>Contextractr$add_serial</a></code>,
+  <code><a href='Contextractr-cash-add_yaml.html'>Contextractr$add_yaml</a></code>,
   <code><a href='Contextractr-cash-locate_keywords.html'>Contextractr$locate_keywords</a></code>,
   <code><a href='Contextractr-cash-new.html'>Contextractr$new</a></code>,
   <code><a href='Contextractr.html'>Contextractr</a></code></p></div>
@@ -135,6 +142,8 @@ mapping</p>
     <ul class="nav nav-pills nav-stacked">
       <li><a href="#arguments">Arguments</a></li>
       
+      <li><a href="#mapping-rules">Mapping Rules</a></li>
+
       <li><a href="#see-also">See also</a></li>
           </ul>
 

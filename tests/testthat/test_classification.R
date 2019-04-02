@@ -34,6 +34,16 @@ example_simple <- function(){
   return(out)
 }
 
+eg_expect_simple <- function(){
+  e <- tibble::tribble(
+    ~EVENT_KEY, ~note_value_groups, ~note_value_keywords,
+    1         , c("chest pain")     , c("chest pain"),
+    2         , c("chest pain")     , c("chest pain", "cp"),
+    3         , NULL                , NULL
+  )
+  return(e)
+}
+
 example_longer <- function(){
   out <- example_simple()
 
@@ -81,12 +91,7 @@ test_that("Can classify some simple text strings correctly", {
   ctx <- Contextractr$new(json = "./chest_pain.json")
   out <- input %>% ctx$locate_keywords(note_value)
 
-  e <- tibble::tribble(
-    ~EVENT_KEY, ~note_value_groups, ~note_value_keywords,
-    1         , c("chest pain")     , c("chest pain"),
-    2         , c("chest pain")     , c("chest pain", "cp"),
-    3         , NULL                , NULL
-  )
+  e <- eg_expect_simple()
 
   compare_helper(out, e, by = "EVENT_KEY")
 })
@@ -112,7 +117,7 @@ test_that("Can match on fuzzy", {
 context("Classification based on prefixes/suffixes works correctly")
 
 test_that("Can use prefixes/suffixes correct",{
-  skip("Not fully written")
+  #skip("Not fully written")
   input <- example_longer()
   ctx <- Contextractr$new(json = "./two_terms.json")
   out <- input %>% ctx$locate_keywords(note_value)
@@ -129,6 +134,22 @@ test_that("Can use prefixes/suffixes correct",{
   )
   e %<>% dplyr::bind_rows()
 
+  out %<>% dplyr::select(EVENT_KEY, CLASSIFICATION, CLASSIFICATION_REASON)
+
   compare_helper(out, e)
 })
 
+context("Default values work correctly")
+
+test_that("Don't need to specify approx.match",{
+
+  input <- example_simple()
+  ctx <- Contextractr$new(yaml = "./no_approx.yaml")
+
+  out <- input %>% ctx$locate_keywords(note_value)
+
+  e <- eg_expect_simple()
+
+  compare_helper(out, e)
+
+})

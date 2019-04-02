@@ -18,6 +18,7 @@ Locate/classify columns according to keywords
 \seealso{
 Other Contextractr: \code{\link{Contextractr$add_json}},
   \code{\link{Contextractr$add_serial}},
+  \code{\link{Contextractr$add_yaml}},
   \code{\link{Contextractr$new}},
   \code{\link{Contextractr}}
 }

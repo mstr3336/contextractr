@@ -68,6 +68,19 @@ Contextractr$set(
 # add_serial =====
 
 #' Add a serial mapping
+#'
+#' Given a list-of-dicts style serial mapping, add this to the mapping rules
+#'     of this set.
+#'
+#' @section Mapping Rules:
+#' For a given entry, corresponding to a a row in a tibble, or a dict/named
+#'     list in a list-of-dicts, the following must be specified:
+#'
+#'     * title: The output grouping for the item (string)
+#'     * keywords: (list of strings) a list of keywords by which to identify
+#'       this group
+#'     * approx.match: (list of decimal numbers) (optional - sets to 0 if not set)
+#'
 #' @name Contextractr$add_serial
 #' @family Contextractr
 #' @importFrom magrittr %<>%
@@ -88,6 +101,7 @@ Contextractr$set(
 #'
 #' Given a path to a mapping file, add that file's contents to the
 #'      mapping
+#' @inheritSection Contextractr$add_serial Mapping Rules
 #' @name Contextractr$add_json
 #' @family Contextractr
 #' @param path the path to the mapping file
@@ -108,8 +122,10 @@ Contextractr$set(
 # add_yaml =====
 
 #' Add a yaml mapping
+#'
+#'
 #' @name Contextractr$add_yaml
-#' @rdname Contextractr-cash-add_json
+#' @inheritSection Contextractr$add_serial Mapping Rules
 #' @family Contextractr
 NULL
 
@@ -194,7 +210,18 @@ Contextractr$set(
 Contextractr$set(
   "private", "add_mapping_entries",
   function(mappings){
-    # TODO: validation
+    approx_filler <- function(kw, am){
+      if (length(am) == length(kw)) return(am)
+      if (rlang::is_empty(am) | rlang::is_na(am)){
+        am = rep_len(0.0, length.out = length(kw))
+        return(am)
+      }
+      stop("For " + kw + "Invalid approx.match specified!")
+    }
+
+    mappings %<>%
+      dplyr::mutate(approx.match = purrr::map2(keywords, approx.match,
+                                                   approx_filler))
 
 
     private$mapping %<>% dplyr::bind_rows(mappings)
