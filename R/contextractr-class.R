@@ -73,7 +73,7 @@ Contextractr$set(
 #'     of this set.
 #'
 #' @section Mapping Rules:
-#'     For a given entry, corresponding to a a row in a tibble, or a dict/named
+#' For a given entry, corresponding to a a row in a tibble, or a dict/named
 #'     list in a list-of-dicts, the following must be specified:
 #'
 #'     * title: The output grouping for the item (string)
@@ -124,9 +124,8 @@ Contextractr$set(
 #' Add a yaml mapping
 #'
 #'
-#' @inheritSection Contextractr$add_serial Mapping Rules
 #' @name Contextractr$add_yaml
-#' @rdname Contextractr-cash-add_json
+#' @inheritSection Contextractr$add_serial Mapping Rules
 #' @family Contextractr
 NULL
 
