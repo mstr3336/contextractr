@@ -122,19 +122,24 @@ test_that("Can use prefixes/suffixes correct",{
   ctx <- Contextractr$new(json = "./two_terms.json")
   out <- input %>% ctx$locate_keywords(note_value)
 
+  out_cols <- c("note_value_groups", "note_value_keywords")
 
   e <- list()
-  e[[1]] <- eg_expect_simple() %>% dplyr::filter(EVENT_KEY != 3)
+  e[[1]] <- eg_expect_simple() %>%
+    dplyr::filter(EVENT_KEY != 3) %>%
+    dplyr::mutate_at(out_cols, as.list)
+
   e[[2]] <- tibble::tribble(
-    ~ EVENT_KEY, ~CLASSIFICATION, ~CLASSIFICATION_REASON,
+    ~ EVENT_KEY, ~note_value_groups, ~note_value_keywords,
     3          , "3"              , "likes",
     4          , "1"              , "hates",
-    5          , "3,4"            , "likes,really likes",
+    5          , c("3,4")         , c("likes","really likes"),
     6          , "4"              , "fantastic"
-  )
+  ) %>% dplyr::mutate_at(out_cols, as.list)
+
   e %<>% dplyr::bind_rows()
 
-  out %<>% dplyr::select(EVENT_KEY, CLASSIFICATION, CLASSIFICATION_REASON)
+  out %<>% dplyr::select_at(c("EVENT_KEY", out_cols))
 
   compare_helper(out, e)
 })
