@@ -19,7 +19,8 @@ Imports:
     magrittr,
     R6,
     glue,
-    tidyr
+    tidyr,
+    logging (>= 0.9-107)
 Suggests: 
     testthat
 Roxygen: list(markdown = TRUE)
