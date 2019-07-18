@@ -52,8 +52,8 @@ Contextractr$set(
   function(json = NULL, yaml = NULL, serial = NULL, tibble = NULL, name = NULL){
     `%||%` <- rlang::`%||%`
 
-    log_name <- name %||% "default_name"
-    private$L <- loggging::getLogger(glue::glue("contextractr.{name}"))
+    name <- name %||% "default_name"
+    private$L <- logging::getLogger(glue::glue("contextractr.{name}"))
 
     handlers <- list(json   = self$add_json,
                      yaml   = self$add_yaml,
