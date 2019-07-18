@@ -26,7 +26,8 @@ Contextractr <- R6::R6Class(
     prefix_ignore = ".*\\.",
     suffix_ignore = "\\..*",
     span_sep = "[\\.\n]+",
-    sep = "\\s+"
+    sep = "\\s+",
+    L = NULL
   )
   )
 
@@ -48,7 +49,12 @@ NULL
 
 Contextractr$set(
   "public", "initialize",
-  function(json = NULL, yaml = NULL, serial = NULL, tibble = NULL){
+  function(json = NULL, yaml = NULL, serial = NULL, tibble = NULL, name = NULL){
+    `%||%` <- rlang::`%||%`
+
+    log_name <- name %||% "default_name"
+    private$L <- loggging::getLogger(glue::glue("contextractr.{name}"))
+
     handlers <- list(json   = self$add_json,
                      yaml   = self$add_yaml,
                      serial = self$add_serial,
@@ -61,6 +67,7 @@ Contextractr$set(
     for (nm in names(inputs)){
       if (!rlang::is_empty(inputs[[nm]])) inputs[[nm]] %>% handlers[[nm]]()
     }
+
     return(invisible(self))
   }
 )
