@@ -268,7 +268,9 @@ Contextractr$set(
       dplyr::mutate(match_locs = purrr::map2(
         keywords, approx.match,
         function(keywords, approx.match){
-          private$L$info(glue::glue("approx.match = {pretty_string(approx.match)}"))
+          private$L$info(glue::glue("keywords = {pretty_string(keywords)}",
+                                    "approx.match = {pretty_string(approx.match)}",
+                                    .sep = "\n"))
           out <- purrr::map2(keywords, approx.match,
                              ~ agrep(.x, col, max.distance = .y, ignore.case = TRUE))
           return(out)
