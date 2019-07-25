@@ -202,9 +202,14 @@ Contextractr$set(
     out <- serial_list %>%
       purrr::transpose(.names = nms) %>% tibble::as_tibble()
     # Fill in the blanks for any missing cols
-    missing <- private$map_cols %>% setdiff(nms)
+    missing <- private$map_cols %>% .[! . %in% nms]
+
+    missing %<>%
+      purrr::set_names() %>%
+      purrr::map(~ NA_character_)
+
     out %<>%
-      dplyr::mutate_at(missing, ~ NA) %>%
+      tibble::add_column(!!!missing) %>%
       dplyr::mutate_at(c("title"), as.character)
     return(out)
   }
