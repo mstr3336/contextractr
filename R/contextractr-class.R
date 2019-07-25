@@ -223,11 +223,11 @@ Contextractr$set(
   "private", "add_mapping_entries",
   function(mappings){
     approx_filler <- function(kw, am){
-      if (length(am) == length(kw)) return(am)
       if (rlang::is_empty(am) | rlang::is_na(am)){
         am = rep_len(0.0, length.out = length(kw))
         return(am)
       }
+      if (length(am) == length(kw)) return(am)
       msg <- glue::glue("For {pretty_string(kw)} invalid approx.match given!",
                         "length(approx.match) = {length(am)}",
                         "length(keywords)  = {length(kw)}")
