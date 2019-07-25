@@ -223,11 +223,11 @@ Contextractr$set(
   "private", "add_mapping_entries",
   function(mappings){
     approx_filler <- function(kw, am){
-      if (length(am) == length(kw)) return(am)
       if (rlang::is_empty(am) | rlang::is_na(am)){
         am = rep_len(0.0, length.out = length(kw))
         return(am)
       }
+      if (length(am) == length(kw)) return(am)
       msg <- glue::glue("For {pretty_string(kw)} invalid approx.match given!",
                         "length(approx.match) = {length(am)}",
                         "length(keywords)  = {length(kw)}")
@@ -268,6 +268,11 @@ Contextractr$set(
       dplyr::mutate(match_locs = purrr::map2(
         keywords, approx.match,
         function(keywords, approx.match){
+          private$L$debug(glue::glue(
+            "",
+            "keywords = {pretty_string(keywords)}",
+            "approx.match = {pretty_string(approx.match)}",
+            .sep = "\n"))
           out <- purrr::map2(keywords, approx.match,
                              ~ agrep(.x, col, max.distance = .y, ignore.case = TRUE))
           return(out)

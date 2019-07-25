@@ -1,7 +1,7 @@
 Package: contextractr
 Type: Package
 Title: Contextractr - Fuzzy Extraction and Classification by Context
-Version: 0.1.1.9001
+Version: 0.1.1.9004
 Authors@R: person("Matthew", "Strasiotto", 
                   email = "matthew.strasiotto@gmail.com",
                   role = c("aut", "cre"))
