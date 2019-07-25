@@ -228,7 +228,11 @@ Contextractr$set(
         am = rep_len(0.0, length.out = length(kw))
         return(am)
       }
-      stop("For ", kw, " Invalid approx.match specified!")
+      msg <- glue::glue("For {pretty_string(kw)} invalid approx.match given!",
+                        "length(approx.match) = {length(am)}",
+                        "length(keywords)  = {length(kw)}")
+      private$L$error("%s", msg)
+      stop(msg)
     }
 
     mappings %<>%
