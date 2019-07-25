@@ -26,7 +26,8 @@ Contextractr <- R6::R6Class(
     prefix_ignore = ".*\\.",
     suffix_ignore = "\\..*",
     span_sep = "[\\.\n]+",
-    sep = "\\s+"
+    sep = "\\s+",
+    L = NULL
   )
   )
 
@@ -48,7 +49,12 @@ NULL
 
 Contextractr$set(
   "public", "initialize",
-  function(json = NULL, yaml = NULL, serial = NULL, tibble = NULL){
+  function(json = NULL, yaml = NULL, serial = NULL, tibble = NULL, name = NULL){
+    `%||%` <- rlang::`%||%`
+
+    name <- name %||% "default_name"
+    private$L <- logging::getLogger(glue::glue("contextractr.{name}"))
+
     handlers <- list(json   = self$add_json,
                      yaml   = self$add_yaml,
                      serial = self$add_serial,
@@ -61,6 +67,7 @@ Contextractr$set(
     for (nm in names(inputs)){
       if (!rlang::is_empty(inputs[[nm]])) inputs[[nm]] %>% handlers[[nm]]()
     }
+
     return(invisible(self))
   }
 )
@@ -195,9 +202,14 @@ Contextractr$set(
     out <- serial_list %>%
       purrr::transpose(.names = nms) %>% tibble::as_tibble()
     # Fill in the blanks for any missing cols
-    missing <- private$map_cols %>% setdiff(nms)
+    missing <- private$map_cols %>% .[! . %in% nms]
+
+    missing %<>%
+      purrr::set_names() %>%
+      purrr::map(~ NA_character_)
+
     out %<>%
-      dplyr::mutate_at(missing, ~ NA) %>%
+      tibble::add_column(!!!missing) %>%
       dplyr::mutate_at(c("title"), as.character)
     return(out)
   }

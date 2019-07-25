@@ -1,7 +1,7 @@
 Package: contextractr
 Type: Package
 Title: Contextractr - Fuzzy Extraction and Classification by Context
-Version: 0.1.0.9003
+Version: 0.1.1
 Authors@R: person("Matthew", "Strasiotto", 
                   email = "matthew.strasiotto@gmail.com",
                   role = c("aut", "cre"))
@@ -19,7 +19,8 @@ Imports:
     magrittr,
     R6,
     glue,
-    tidyr
+    tidyr,
+    logging (>= 0.9-107)
 Suggests: 
     testthat
 Roxygen: list(markdown = TRUE)
