@@ -223,10 +223,15 @@ Contextractr$set(
   "private", "add_mapping_entries",
   function(mappings){
     approx_filler <- function(kw, am){
-      if (rlang::is_empty(am) | rlang::is_na(am)){
-        am = rep_len(0.0, length.out = length(kw))
-        return(am)
-      }
+
+      # If approx.match isn't set, it defaults to 0.0
+      if (rlang::is_empty(am) | rlang::is_na(am)) am <- 0.0
+
+      # If approx.match is given as a scalar, repeat that for all kw
+      if (length(am) == 1) am %<>% rep_len(length.out = length(kw))
+
+      # If approx.match was a missing, it's now defaulted everything to 0.0
+      # If was a scalar, that's been repeated for all
       if (length(am) == length(kw)) return(am)
       msg <- glue::glue("For {pretty_string(kw)} invalid approx.match given!",
                         "length(approx.match) = {length(am)}",
