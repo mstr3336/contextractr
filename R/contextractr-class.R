@@ -196,7 +196,7 @@ Contextractr$set(
     out <- serial_list %>%
       purrr::transpose(.names = nms) %>% tibble::as_tibble()
     # Fill in the blanks for any missing cols
-    missing <- mapping_colnames %>% .[! . %in% nms]
+    missing <- mapping_colnames() %>% .[! . %in% nms]
 
     missing %<>%
       purrr::set_names() %>%
