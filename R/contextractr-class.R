@@ -26,8 +26,8 @@ Contextractr <- R6::R6Class(
     prefix_ignore = ".*\\.",
     suffix_ignore = "\\..*",
     span_sep = "[\\.\n]+",
-    sep = "\\s+",
-    L = NULL
+    sep = "\\s+"
+    #,L = NULL # Removed for now because I want to decouple functions that dont need state
   )
   )
 
@@ -53,7 +53,7 @@ Contextractr$set(
     `%||%` <- rlang::`%||%`
 
     name <- name %||% "default_name"
-    private$L <- logging::getLogger(glue::glue("contextractr.{name}"))
+    #private$L <- logging::getLogger(glue::glue("contextractr.{name}"))
 
     handlers <- list(json   = self$add_json,
                      yaml   = self$add_yaml,
@@ -236,7 +236,7 @@ Contextractr$set(
       msg <- glue::glue("For {pretty_string(kw)} invalid approx.match given!",
                         "length(approx.match) = {length(am)}",
                         "length(keywords)  = {length(kw)}")
-      private$L$error("%s", msg)
+      L$error("%s", msg)
       stop(msg)
     }
 
@@ -273,7 +273,8 @@ Contextractr$set(
       dplyr::mutate(match_locs = purrr::map2(
         keywords, approx.match,
         function(keywords, approx.match){
-          private$L$debug(glue::glue(
+          # was private$L
+          L$debug(glue::glue(
             "",
             "keywords = {pretty_string(keywords)}",
             "approx.match = {pretty_string(approx.match)}",
