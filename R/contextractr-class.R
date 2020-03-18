@@ -15,12 +15,6 @@ Contextractr <- R6::R6Class(
   ),
   private = list(
     mapping = NULL,
-    map_cols = c(
-      "title", "keywords", "approx.match", "false.positive.matches",
-      "prefix", "suffix", "prefix.approx.match",
-      "suffix.approx.match", "suffix.descriptions", "prefix.class",
-      "suffix.class", "ignore.prefix", "ignore.suffix",
-      "ignore.prefix.approx.match", "ignore.suffix.approx.match"),
     prefix_length = 4,
     suffix_length = 4,
     prefix_ignore = ".*\\.",
@@ -202,7 +196,7 @@ Contextractr$set(
     out <- serial_list %>%
       purrr::transpose(.names = nms) %>% tibble::as_tibble()
     # Fill in the blanks for any missing cols
-    missing <- private$map_cols %>% .[! . %in% nms]
+    missing <- mapping_colnames %>% .[! . %in% nms]
 
     missing %<>%
       purrr::set_names() %>%
