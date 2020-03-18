@@ -164,7 +164,7 @@ Contextractr$set(
 
     idx <- .df %>%
       dplyr::pull(col) %>%
-      private$find_keywords(private$mapping)
+      find_keywords(private$mapping)
 
     out <- .df %>% add_keyword_cols(col, idx)
     out %<>%
@@ -257,30 +257,8 @@ Contextractr$set(
   }
 )
 
-# find_keywords =====
+# find_keywords (GONE) =====
 
-Contextractr$set(
-  "private", "find_keywords",
-  function(col, mapping){
-
-    indexer <- mapping %>%
-      dplyr::mutate(match_locs = purrr::map2(
-        keywords, approx.match,
-        function(keywords, approx.match){
-          # was private$L
-          L$debug(glue::glue(
-            "",
-            "keywords = {pretty_string(keywords)}",
-            "approx.match = {pretty_string(approx.match)}",
-            .sep = "\n"))
-          out <- purrr::map2(keywords, approx.match,
-                             ~ agrep(.x, col, max.distance = .y, ignore.case = TRUE, fixed = FALSE))
-          return(out)
-        }))
-
-    return(indexer)
-  }
-)
 
 # split_column ======
 
