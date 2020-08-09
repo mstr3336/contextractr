@@ -15,19 +15,13 @@ Contextractr <- R6::R6Class(
   ),
   private = list(
     mapping = NULL,
-    map_cols = c(
-      "title", "keywords", "approx.match", "false.positive.matches",
-      "prefix", "suffix", "prefix.approx.match",
-      "suffix.approx.match", "suffix.descriptions", "prefix.class",
-      "suffix.class", "ignore.prefix", "ignore.suffix",
-      "ignore.prefix.approx.match", "ignore.suffix.approx.match"),
     prefix_length = 4,
     suffix_length = 4,
     prefix_ignore = ".*\\.",
     suffix_ignore = "\\..*",
     span_sep = "[\\.\n]+",
-    sep = "\\s+",
-    L = NULL
+    sep = "\\s+"
+    #,L = NULL # Removed for now because I want to decouple functions that dont need state
   )
   )
 
@@ -53,7 +47,7 @@ Contextractr$set(
     `%||%` <- rlang::`%||%`
 
     name <- name %||% "default_name"
-    private$L <- logging::getLogger(glue::glue("contextractr.{name}"))
+    #private$L <- logging::getLogger(glue::glue("contextractr.{name}"))
 
     handlers <- list(json   = self$add_json,
                      yaml   = self$add_yaml,
@@ -170,9 +164,9 @@ Contextractr$set(
 
     idx <- .df %>%
       dplyr::pull(col) %>%
-      private$find_keywords(private$mapping)
+      find_keywords(private$mapping)
 
-    out <- .df %>% private$add_keyword_cols(col, idx)
+    out <- .df %>% add_keyword_cols(col, idx)
     out %<>%
       dplyr::mutate(!!group_col := purrr::map(indexer, "title")) %>%
       dplyr::mutate_at(group_col, ~ purrr::map(., unique))
@@ -202,7 +196,7 @@ Contextractr$set(
     out <- serial_list %>%
       purrr::transpose(.names = nms) %>% tibble::as_tibble()
     # Fill in the blanks for any missing cols
-    missing <- private$map_cols %>% .[! . %in% nms]
+    missing <- mapping_colnames() %>% .[! . %in% nms]
 
     missing %<>%
       purrr::set_names() %>%
@@ -236,7 +230,7 @@ Contextractr$set(
       msg <- glue::glue("For {pretty_string(kw)} invalid approx.match given!",
                         "length(approx.match) = {length(am)}",
                         "length(keywords)  = {length(kw)}")
-      private$L$error("%s", msg)
+      L$error("%s", msg)
       stop(msg)
     }
 
@@ -263,60 +257,8 @@ Contextractr$set(
   }
 )
 
-# find_keywords =====
+# find_keywords (GONE) =====
 
-Contextractr$set(
-  "private", "find_keywords",
-  function(col, mapping){
-
-    indexer <- mapping %>%
-      dplyr::mutate(match_locs = purrr::map2(
-        keywords, approx.match,
-        function(keywords, approx.match){
-          private$L$debug(glue::glue(
-            "",
-            "keywords = {pretty_string(keywords)}",
-            "approx.match = {pretty_string(approx.match)}",
-            .sep = "\n"))
-          out <- purrr::map2(keywords, approx.match,
-                             ~ agrep(.x, col, max.distance = .y, ignore.case = TRUE, fixed = FALSE))
-          return(out)
-        }))
-
-    return(indexer)
-  }
-)
-
-# add_keyword_cols ====
-
-#' @importFrom glue glue
-#' @importFrom rlang quo quos enquo enquos
-
-Contextractr$set(
-  "private", "add_keyword_cols",
-  function(.df, col,indexer){
-
-    # By unnesting keywords, approxmatch, match_locs
-    # and unnesting match_locs again, a unique index for each row is made
-    unnest_cols <- rlang::quos(keywords, approx.match, match_locs)
-    preserve <-  indexer %>% names() %>%
-      setdiff(purrr::map_chr(unnest_cols,rlang::as_name))
-
-    indexer %<>%
-      tidyr::unnest(!!!unnest_cols, .preserve = dplyr::one_of(preserve)) %>%
-      dplyr::mutate_at(dplyr::vars(!!!unnest_cols[1:2]), unlist) %>%
-      tidyr::unnest(!!!unnest_cols[3], .preserve = dplyr::one_of(preserve))
-
-    # We need idx so we can join it on match locs
-    # A nested tibble col will be added for each corresponding match
-    out <- .df %>%
-      dplyr::mutate(idx = dplyr::row_number()) %>%
-      dplyr::nest_join(indexer, by = c("idx" = "match_locs"), name = "indexer")
-
-    return(out)
-
-  }
-)
 
 # split_column ======
 

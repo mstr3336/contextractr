@@ -19,7 +19,7 @@ Imports:
     magrittr,
     R6,
     glue,
-    tidyr,
+    tidyr (>= 1.1.1),
     logging (>= 0.9-107)
 Suggests: 
     testthat

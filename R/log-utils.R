@@ -9,3 +9,5 @@ pretty_string <- function(x, ...){
 
   return(out)
 }
+
+L <- logging::getLogger("contextractr")
